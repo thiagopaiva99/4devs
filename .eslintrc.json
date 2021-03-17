@@ -1,23 +1,23 @@
 {
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
-    },
-    "extends": [
-      "standard-with-typescript",
-      "plugin:react/recommended",
-      "plugin:cypress/recommended"
-    ],
-    "env": {
-      "cypress/globals": true
-    },
-    "plugins": ["react", "cypress"],
-    "parserOptions": {
-      "project": "./tsconfig-eslint.json"
-    },
-    "rules": {
-      "@typescript-eslint/consistent-type-definitions": "off",
-      "@typescript-eslint/strict-boolean-expressions": "off"
+  "settings": {
+    "react": {
+      "version": "detect"
     }
+  },
+  "extends": [
+    "standard-with-typescript",
+    "plugin:react/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "env": {
+    "cypress/globals": true
+  },
+  "plugins": ["react", "cypress"],
+  "parserOptions": {
+    "project": "./tsconfig-eslint.json"
+  },
+  "rules": {
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off"
   }
+}
