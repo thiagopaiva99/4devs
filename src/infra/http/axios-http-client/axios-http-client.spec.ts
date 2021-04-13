@@ -16,10 +16,10 @@ const httpPostMockFactory = (): HttpPostParams<any> => ({
 })
 
 describe('AxiosHttpClient', () => {
-    test('should call axios with correct URL and verb', async () => {
+    test('should call axios with correct URL, verb and body', async () => {
         const mockedPostParams = httpPostMockFactory()
         const axiosClient = axiosFactory();
         await axiosClient.post(mockedPostParams);
-        expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url);
+        expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body);
     })
 })
