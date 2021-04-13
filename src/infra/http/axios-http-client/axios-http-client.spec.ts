@@ -1,10 +1,15 @@
 import { AxiosHttpClient } from './axios-http-client';
 import axios from 'axios';
-import { internet, random } from 'faker';
-import { HttpPostParams } from '@/data/protocols/http';
+import { internet, random, datatype } from 'faker';
+import { HttpPostParams, HttpStatusCode } from '@/data/protocols/http';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxiosResult = {
+    data: random.objectElement(),
+    status: datatype.number()
+}
+mockedAxios.post.mockResolvedValue(mockedAxiosResult)
 
 const axiosFactory = (): AxiosHttpClient => {
     return new AxiosHttpClient();
@@ -21,5 +26,14 @@ describe('AxiosHttpClient', () => {
         const axiosClient = axiosFactory();
         await axiosClient.post(mockedPostParams);
         expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body);
+    })
+
+    test('should return the correct status code and body', async () => {
+        const axiosClient = axiosFactory();
+        const response = await axiosClient.post(httpPostMockFactory());
+        expect(response).toEqual({
+            statusCode: mockedAxiosResult.status,
+            body: mockedAxiosResult.data
+        })
     })
 })
