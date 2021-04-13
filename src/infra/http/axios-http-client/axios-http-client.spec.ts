@@ -1,39 +1,35 @@
 import { AxiosHttpClient } from './axios-http-client';
+import { mockAxios } from '@/infra/test';
 import axios from 'axios';
-import { internet, random, datatype } from 'faker';
-import { HttpPostParams, HttpStatusCode } from '@/data/protocols/http';
+import { httpPostMockFactory } from '@/data/test/mock-http-post';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-const mockedAxiosResult = {
-    data: random.objectElement(),
-    status: datatype.number()
-}
-mockedAxios.post.mockResolvedValue(mockedAxiosResult)
 
-const axiosFactory = (): AxiosHttpClient => {
-    return new AxiosHttpClient();
+type SutTypes = {
+    axiosClient: AxiosHttpClient;
+    mockedAxios: jest.Mocked<typeof axios>
 }
 
-const httpPostMockFactory = (): HttpPostParams<any> => ({
-    url: internet.url(),
-    body: random.objectElement()
-})
+const axiosFactory = (): SutTypes => {
+    const axiosClient = new AxiosHttpClient();
+    const mockedAxios = mockAxios();
+
+    return { axiosClient, mockedAxios };
+}
+
+
 
 describe('AxiosHttpClient', () => {
     test('should call axios with correct URL, verb and body', async () => {
         const mockedPostParams = httpPostMockFactory()
-        const axiosClient = axiosFactory();
+        const { axiosClient, mockedAxios } = axiosFactory();
         await axiosClient.post(mockedPostParams);
         expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body);
     })
 
     test('should return the correct status code and body', async () => {
-        const axiosClient = axiosFactory();
-        const response = await axiosClient.post(httpPostMockFactory());
-        expect(response).toEqual({
-            statusCode: mockedAxiosResult.status,
-            body: mockedAxiosResult.data
-        })
+        const { axiosClient, mockedAxios } = axiosFactory();
+        const promiseResponse = axiosClient.post(httpPostMockFactory());
+        expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
     })
 })
