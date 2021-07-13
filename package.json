@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests",
+    "start": "webpack-dev-server --open",
+    "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:watch": "npm run test -- --watch",
     "test:staged": "npm run test -- --findRelatedTests",
     "test:ci": "npm run test -- --coverage"
@@ -20,11 +21,13 @@
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "eslint": "^6.8.0",
     "eslint-config-standard-with-typescript": "^11.0.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-standard": "^5.0.0",
     "faker": "^5.5.2",
     "git-commit-msg-linter": "^3.0.3",
