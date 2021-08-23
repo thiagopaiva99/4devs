@@ -1,0 +1,10 @@
+@import '../../styles/colors.scss';
+
+* {
+  font-size: 16px;
+}
+
+.footer {
+  background-color: $primary;
+  height: 3rem;
+}
