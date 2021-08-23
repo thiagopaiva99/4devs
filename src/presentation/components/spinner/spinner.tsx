@@ -7,4 +7,4 @@ const Spinner: React.FC<Props> = (props: Props) => (
     <div {...props} className={[Styles.spinner, props.className].join(' ')}><div></div><div></div><div></div><div></div></div>
 );
 
-export { Spinner }
+export default Spinner
