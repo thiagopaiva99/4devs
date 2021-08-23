@@ -1,0 +1,22 @@
+* {
+  font-size: 16px;
+}
+
+.inputWrapper {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+
+  input {
+    flex-grow: 1;
+  }
+
+  .status {
+    position: absolute;
+    right: 1rem;
+    font-size: 0.75rem;
+    cursor: help;
+  }
+}
