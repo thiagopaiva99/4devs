@@ -6,4 +6,4 @@ const Logo: React.FC = () => {
   )
 }
 
-export { Logo }
+export default Logo
