@@ -94,4 +94,16 @@ describe('Login Component', () => {
         const submitButton = component.getByTestId('submit') as HTMLButtonElement;
         expect(submitButton.disabled).toBe(false);
     });
+
+    test('should show spinner on submit', () => {
+        const { component } = loginComponentFactory();
+        const emailInput = component.getByTestId('email-field');
+        fireEvent.input(emailInput, { target: { value: faker.internet.email() } });
+        const passwordInput = component.getByTestId('password-field');
+        fireEvent.input(passwordInput, { target: { value: faker.internet.password() } });
+        const submitButton = component.getByTestId('submit') as HTMLButtonElement;
+        fireEvent.click(submitButton);
+        const spinner = component.getByTestId('spinner');
+        expect(spinner).toBeTruthy();
+    });
 });
