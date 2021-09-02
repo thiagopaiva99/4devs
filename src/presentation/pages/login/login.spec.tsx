@@ -130,4 +130,12 @@ describe('Login Component', () => {
         validSubmitFactory(component);
         expect(authenticationSpy.callsCount).toBe(1);
     })
+
+    test('should not call authentication if form is invald', () => {
+        const validationError = faker.random.words();
+        const { component, authenticationSpy } = loginComponentFactory({ validationError });
+        populateEmailField(component);
+        fireEvent.submit(component.getByTestId('form'));
+        expect(authenticationSpy.callsCount).toBe(0);
+    })
 });
