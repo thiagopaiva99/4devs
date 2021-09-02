@@ -1,5 +1,7 @@
 import React from 'react';
 import 'jest-localstorage-mock';
+import { Router } from 'react-router-dom'
+import { createMemoryHistory } from 'history'
 
 import faker from 'faker';
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react';
@@ -17,13 +19,19 @@ type FactoryParams = {
     validationError: string;
 }
 
+const history = createMemoryHistory();
+
 const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTypes  => {
     const validationStub = new ValidationStub();
     validationStub.errorMessage = params?.validationError;
 
     const authenticationSpy = new AuthenticationSpy();
 
-    const component = render(<Login validation={validationStub} authentication={authenticationSpy} />);
+    const component = render(
+        <Router history={history}>
+            <Login validation={validationStub} authentication={authenticationSpy} />
+        </Router>
+    );
 
     return {
         component,
@@ -159,5 +167,13 @@ describe('Login Component', () => {
         validSubmitFactory(component);
         await waitFor(() => component.getByTestId('form'));
         expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', authenticationSpy.account.accessToken)
+    })
+
+    test('should go to signup page', () => {
+        const { component } = loginComponentFactory();
+        const signup = component.getByTestId('signup');
+        fireEvent.click(signup);
+        expect(history.length).toBe(2);
+        expect(history.location.pathname).toBe('/signup');
     })
 });
