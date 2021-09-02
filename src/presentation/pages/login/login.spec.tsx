@@ -1,4 +1,5 @@
 import React from 'react';
+import 'jest-localstorage-mock';
 
 import faker from 'faker';
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react';
@@ -55,6 +56,7 @@ const validSubmitFactory = (component: RenderResult, email = faker.internet.emai
 
 describe('Login Component', () => {
     afterEach(cleanup);
+    beforeEach(localStorage.clear)
 
     test('should start with initial state', () => {
         const validationError = faker.random.words();
@@ -132,7 +134,7 @@ describe('Login Component', () => {
         expect(authenticationSpy.callsCount).toBe(1);
     })
 
-    test('should not call authentication if form is invald', () => {
+    test('should not call authentication if form is invalid', () => {
         const validationError = faker.random.words();
         const { component, authenticationSpy } = loginComponentFactory({ validationError });
         populateEmailField(component);
@@ -150,5 +152,12 @@ describe('Login Component', () => {
         const mainError = component.getByTestId('main-error')
         expect(mainError.textContent).toBe(error.message)
         expect(errorWrapper.childElementCount).toBe(1);
+    })
+
+    test('should add acesstoken to localstorage on sucess', async () => {
+        const { component, authenticationSpy } = loginComponentFactory();
+        validSubmitFactory(component);
+        await waitFor(() => component.getByTestId('form'));
+        expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', authenticationSpy.account.accessToken)
     })
 });
