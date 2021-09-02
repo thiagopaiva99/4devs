@@ -123,4 +123,11 @@ describe('Login Component', () => {
             password
         });
     });
+
+    test('should call authentication only once', () => {
+        const { component, authenticationSpy } = loginComponentFactory();
+        validSubmitFactory(component);
+        validSubmitFactory(component);
+        expect(authenticationSpy.callsCount).toBe(1);
+    })
 });
