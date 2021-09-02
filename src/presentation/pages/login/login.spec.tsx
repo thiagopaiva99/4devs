@@ -29,6 +29,29 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
     }
 }
 
+const populateEmailField = (component: RenderResult, email = faker.internet.email()): void => {
+    const emailInput = component.getByTestId('email-field');
+    fireEvent.input(emailInput, { target: { value: email } });
+}
+
+const populatePasswordField = (component: RenderResult, password = faker.internet.password()): void => {
+    const passwordField = component.getByTestId('password-field');
+    fireEvent.input(passwordField, { target: { value: password } });
+}
+
+const simulateStatusForField = (component: RenderResult, fieldName: string, validationError?: string): void => {
+    const field = component.getByTestId(`${fieldName}-status`);
+        expect(field.title).toBe(validationError || 'Tudo certo!');
+        expect(field.textContent).toBe(validationError ? '🔴' : '🟢');
+}
+
+const validSubmitFactory = (component: RenderResult, email = faker.internet.email(), password = faker.internet.password()): void => {
+    populateEmailField(component, email);
+    populatePasswordField(component, password);
+    const submitButton = component.getByTestId('submit') as HTMLButtonElement;
+    fireEvent.click(submitButton);
+}
+
 describe('Login Component', () => {
     afterEach(cleanup);
 
@@ -42,85 +65,59 @@ describe('Login Component', () => {
         const submitButton = component.getByTestId('submit') as HTMLButtonElement;
         expect(submitButton.disabled).toBe(true);
 
-        const emailStatus = component.getByTestId('email-status');
-        expect(emailStatus.title).toBe(validationError);
-        expect(emailStatus.textContent).toBe('🔴');
-
-        const passwordStatus = component.getByTestId('email-status');
-        expect(passwordStatus.title).toBe(validationError);
-        expect(passwordStatus.textContent).toBe('🔴');
+        simulateStatusForField(component, 'email', validationError);
+        simulateStatusForField(component, 'password', validationError);
     });
 
     test('should show email error if validation fails', () => {
         const validationError = faker.random.words();
         const { component } = loginComponentFactory({ validationError });
-        const emailInput = component.getByTestId('email-field');
-        fireEvent.input(emailInput, { target: { value: faker.internet.email() } });
-        const emailStatus = component.getByTestId('email-status');
-        expect(emailStatus.title).toBe(validationError);
-        expect(emailStatus.textContent).toBe('🔴');
+        populateEmailField(component);
+        simulateStatusForField(component, 'email', validationError);
     });
 
     test('should show password error if validation fails', () => {
         const validationError = faker.random.words();
         const { component } = loginComponentFactory({ validationError });
-        const passwordInput = component.getByTestId('password-field');
-        fireEvent.input(passwordInput, { target: { value: faker.internet.password() } });
-        const passwordStatus = component.getByTestId('password-status');
-        expect(passwordStatus.title).toBe(validationError);
-        expect(passwordStatus.textContent).toBe('🔴');
+        populatePasswordField(component);
+        simulateStatusForField(component, 'password', validationError);
     });
 
     test('should show valid email state if validation succeeds', () => {
         const { component } = loginComponentFactory();
-        const emailInput = component.getByTestId('email-field');
-        fireEvent.input(emailInput, { target: { value: faker.internet.email() } });
-        const emailStatus = component.getByTestId('email-status');
-        expect(emailStatus.title).toBe('Tudo certo!');
-        expect(emailStatus.textContent).toBe('🟢');
+        populateEmailField(component);
+        simulateStatusForField(component, 'email');
     });
 
     test('should show valid password state if validation succeeds', () => {
         const { component } = loginComponentFactory();
-        const passwordInput = component.getByTestId('password-field');
-        fireEvent.input(passwordInput, { target: { value: faker.internet.password() } });
-        const passwordStatus = component.getByTestId('password-status');
-        expect(passwordStatus.title).toBe('Tudo certo!');
-        expect(passwordStatus.textContent).toBe('🟢');
+        populatePasswordField(component);
+        simulateStatusForField(component, 'email');
     });
 
     test('should enable submit button if form is valid', () => {
         const { component } = loginComponentFactory();
-        const emailInput = component.getByTestId('email-field');
-        fireEvent.input(emailInput, { target: { value: faker.internet.email() } });
-        const passwordInput = component.getByTestId('password-field');
-        fireEvent.input(passwordInput, { target: { value: faker.internet.password() } });
+        populateEmailField(component)
+        populatePasswordField(component)
         const submitButton = component.getByTestId('submit') as HTMLButtonElement;
         expect(submitButton.disabled).toBe(false);
     });
 
     test('should show spinner on submit', () => {
         const { component } = loginComponentFactory();
-        const emailInput = component.getByTestId('email-field');
-        fireEvent.input(emailInput, { target: { value: faker.internet.email() } });
-        const passwordInput = component.getByTestId('password-field');
-        fireEvent.input(passwordInput, { target: { value: faker.internet.password() } });
-        const submitButton = component.getByTestId('submit') as HTMLButtonElement;
-        fireEvent.click(submitButton);
+        validSubmitFactory(component);
         const spinner = component.getByTestId('spinner');
         expect(spinner).toBeTruthy();
     });
 
     test('should call authentication with correct values', () => {
         const { component, authenticationSpy } = loginComponentFactory();
+
         const email = faker.internet.email();
         const password = faker.internet.password();
-        const emailInput = component.getByTestId('email-field');
-        fireEvent.input(emailInput, { target: { value: email } });
-        const passwordInput = component.getByTestId('password-field');
-        fireEvent.input(passwordInput, { target: { value: password } });
-        const submitButton = component.getByTestId('submit') as HTMLButtonElement;
-        fireEvent.click(submitButton);
+
+        validSubmitFactory(component, email, password);
+        
         expect(authenticationSpy.params).toEqual({
             email,
             password
