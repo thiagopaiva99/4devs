@@ -1,10 +1,11 @@
 import React from 'react';
 
 import faker from 'faker';
-import { cleanup, fireEvent, render, RenderResult } from '@testing-library/react';
+import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react';
 
 import { Login } from './login';
 import { AuthenticationSpy, ValidationStub } from '@/presentation/test';
+import { InvalidCredentialsError } from '@/domain/errors';
 
 type LoginComponentFactoryTypes = {
     component: RenderResult;
@@ -137,5 +138,17 @@ describe('Login Component', () => {
         populateEmailField(component);
         fireEvent.submit(component.getByTestId('form'));
         expect(authenticationSpy.callsCount).toBe(0);
+    })
+
+    test('should present error if validation fails', async () => {
+        const { component, authenticationSpy } = loginComponentFactory();
+        const error = new InvalidCredentialsError();
+        jest.spyOn(authenticationSpy, 'auth').mockReturnValueOnce(Promise.reject(error))
+        validSubmitFactory(component);
+        const errorWrapper = component.getByTestId('error-wrapper');
+        await waitFor(() => errorWrapper);
+        const mainError = component.getByTestId('main-error')
+        expect(mainError.textContent).toBe(error.message)
+        expect(errorWrapper.childElementCount).toBe(1);
     })
 });
