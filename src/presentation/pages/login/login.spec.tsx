@@ -51,17 +51,39 @@ const populatePasswordField = (component: RenderResult, password = faker.interne
     fireEvent.input(passwordField, { target: { value: password } });
 }
 
-const simulateStatusForField = (component: RenderResult, fieldName: string, validationError?: string): void => {
+const testStatusForField = (component: RenderResult, fieldName: string, validationError?: string): void => {
     const field = component.getByTestId(`${fieldName}-status`);
-        expect(field.title).toBe(validationError || 'Tudo certo!');
-        expect(field.textContent).toBe(validationError ? '🔴' : '🟢');
+    expect(field.title).toBe(validationError || 'Tudo certo!');
+    expect(field.textContent).toBe(validationError ? '🔴' : '🟢');
 }
 
-const validSubmitFactory = (component: RenderResult, email = faker.internet.email(), password = faker.internet.password()): void => {
+const testErrorWrapperChildCount = (component: RenderResult, count: number): void => {
+    const errorWrapper = component.getByTestId('error-wrapper');
+    expect(errorWrapper.childElementCount).toBe(count);
+}
+
+const testElementExists = (component: RenderResult, fieldName: string) => {
+    const element = component.getByTestId(fieldName);
+    expect(element).toBeTruthy();
+}
+
+const testElementText = (component: RenderResult, fieldName: string, text: string) => {
+    const element = component.getByTestId(fieldName)
+    expect(element.textContent).toBe(text)
+}
+
+const testButtonIsDisabled = (component: RenderResult, fieldName: string, isDisabled: boolean) => {
+    const button = component.getByTestId(fieldName) as HTMLButtonElement;
+    expect(button.disabled).toBe(isDisabled);
+}
+
+
+const validSubmitFactory = async (component: RenderResult, email = faker.internet.email(), password = faker.internet.password()): Promise<void> => {
     populateEmailField(component, email);
     populatePasswordField(component, password);
-    const submitButton = component.getByTestId('submit') as HTMLButtonElement;
-    fireEvent.click(submitButton);
+    const form = component.getByTestId('form');
+    fireEvent.submit(form);
+    await waitFor(() => form)
 }
 
 describe('Login Component', () => {
@@ -71,103 +93,85 @@ describe('Login Component', () => {
     test('should start with initial state', () => {
         const validationError = faker.random.words();
         const { component } = loginComponentFactory({ validationError });
-
-        const errorWrapper = component.getByTestId('error-wrapper');
-        expect(errorWrapper.childElementCount).toBe(0);
-
-        const submitButton = component.getByTestId('submit') as HTMLButtonElement;
-        expect(submitButton.disabled).toBe(true);
-
-        simulateStatusForField(component, 'email', validationError);
-        simulateStatusForField(component, 'password', validationError);
+        testErrorWrapperChildCount(component, 0);
+        testButtonIsDisabled(component, 'submit', true);
+        testStatusForField(component, 'email', validationError);
+        testStatusForField(component, 'password', validationError);
     });
 
     test('should show email error if validation fails', () => {
         const validationError = faker.random.words();
         const { component } = loginComponentFactory({ validationError });
         populateEmailField(component);
-        simulateStatusForField(component, 'email', validationError);
+        testStatusForField(component, 'email', validationError);
     });
 
     test('should show password error if validation fails', () => {
         const validationError = faker.random.words();
         const { component } = loginComponentFactory({ validationError });
         populatePasswordField(component);
-        simulateStatusForField(component, 'password', validationError);
+        testStatusForField(component, 'password', validationError);
     });
 
     test('should show valid email state if validation succeeds', () => {
         const { component } = loginComponentFactory();
         populateEmailField(component);
-        simulateStatusForField(component, 'email');
+        testStatusForField(component, 'email');
     });
 
     test('should show valid password state if validation succeeds', () => {
         const { component } = loginComponentFactory();
         populatePasswordField(component);
-        simulateStatusForField(component, 'email');
+        testStatusForField(component, 'email');
     });
 
     test('should enable submit button if form is valid', () => {
         const { component } = loginComponentFactory();
         populateEmailField(component)
         populatePasswordField(component)
-        const submitButton = component.getByTestId('submit') as HTMLButtonElement;
-        expect(submitButton.disabled).toBe(false);
+        testButtonIsDisabled(component, 'submit', false);
     });
 
-    test('should show spinner on submit', () => {
+    test('should show spinner on submit', async () => {
         const { component } = loginComponentFactory();
-        validSubmitFactory(component);
-        const spinner = component.getByTestId('spinner');
-        expect(spinner).toBeTruthy();
+        await validSubmitFactory(component);
+        testElementExists(component, 'spinner');
     });
 
-    test('should call authentication with correct values', () => {
+    test('should call authentication with correct values', async () => {
         const { component, authenticationSpy } = loginComponentFactory();
-
         const email = faker.internet.email();
         const password = faker.internet.password();
-
-        validSubmitFactory(component, email, password);
-        
-        expect(authenticationSpy.params).toEqual({
-            email,
-            password
-        });
+        await validSubmitFactory(component, email, password);
+        expect(authenticationSpy.params).toEqual({ email, password });
     });
 
-    test('should call authentication only once', () => {
+    test('should call authentication only once', async () => {
         const { component, authenticationSpy } = loginComponentFactory();
-        validSubmitFactory(component);
-        validSubmitFactory(component);
+        await validSubmitFactory(component);
+        await validSubmitFactory(component);
         expect(authenticationSpy.callsCount).toBe(1);
     })
 
-    test('should not call authentication if form is invalid', () => {
+    test('should not call authentication if form is invalid', async () => {
         const validationError = faker.random.words();
         const { component, authenticationSpy } = loginComponentFactory({ validationError });
-        populateEmailField(component);
-        fireEvent.submit(component.getByTestId('form'));
+        await validSubmitFactory(component);
         expect(authenticationSpy.callsCount).toBe(0);
     })
 
-    test('should present error if validation fails', async () => {
+    test('should present error if authentication fails', async () => {
         const { component, authenticationSpy } = loginComponentFactory();
         const error = new InvalidCredentialsError();
         jest.spyOn(authenticationSpy, 'auth').mockReturnValueOnce(Promise.reject(error))
-        validSubmitFactory(component);
-        const errorWrapper = component.getByTestId('error-wrapper');
-        await waitFor(() => errorWrapper);
-        const mainError = component.getByTestId('main-error')
-        expect(mainError.textContent).toBe(error.message)
-        expect(errorWrapper.childElementCount).toBe(1);
+        await validSubmitFactory(component);
+        testElementText(component, 'main-error', error.message)
+        testErrorWrapperChildCount(component, 1)
     })
 
-    test('should add acesstoken to localstorage on sucess', async () => {
+    test('should add acesstoken to localstorage on success', async () => {
         const { component, authenticationSpy } = loginComponentFactory();
-        validSubmitFactory(component);
-        await waitFor(() => component.getByTestId('form'));
+        await validSubmitFactory(component);
         expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', authenticationSpy.account.accessToken)
         expect(history.length).toBe(1);
         expect(history.location.pathname).toBe('/');
