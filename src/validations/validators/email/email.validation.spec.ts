@@ -17,4 +17,10 @@ describe('EmailValidation', () => {
         const error = validator.validate(faker.internet.email());
         expect(error).toBeFalsy();
     })
+
+    test('should return falsy if email is empty string', () => {
+        const validator = validationFactory();
+        const error = validator.validate('');
+        expect(error).toBeFalsy();
+    })
 })
