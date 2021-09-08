@@ -27,4 +27,10 @@ describe('ValidationComposite', () => {
         const error = validation.validate('any_field', 'any_value');
         expect(error).toBe('first_error')
     })
+
+    test('should return falsy if none validation fails', () => {
+        const { validation, fieldValidationsSpy } = validationFactory();    
+        const error = validation.validate('any_field', 'any_value');
+        expect(error).toBeFalsy()
+    })
 })
