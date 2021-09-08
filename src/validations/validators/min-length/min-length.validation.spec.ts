@@ -7,4 +7,10 @@ describe('MinLengthValidation', () => {
         const error = validator.validate('four');
         expect(error).toEqual(new InvalidFieldError());
     })
+
+    test('should return falsy if value is valid', () => {
+        const validator = new MinLengthValidation('field', 5);
+        const error = validator.validate('cinco');
+        expect(error).toBeFalsy()
+    })
 })
