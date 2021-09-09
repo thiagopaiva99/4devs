@@ -13,7 +13,7 @@ const validationFactory = (fieldName: string): ValidationFactoryTypes => {
         new FieldValidationSpy(fieldName), 
         new FieldValidationSpy(fieldName)
     ]
-    const validation = new ValidationComposite(fieldValidationsSpy);
+    const validation = ValidationComposite.build(fieldValidationsSpy);
 
     return { 
         validation, 
