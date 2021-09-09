@@ -3,13 +3,13 @@ import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 type Props = {
-    makeLogin: React.FC
+    loginFactory: React.FC
 }
 
-const Router: React.FC<Props> = ({ makeLogin }: Props) => (
+const Router: React.FC<Props> = ({ loginFactory }: Props) => (
     <BrowserRouter>
         <Switch>
-            <Route path="/login" exact={true} component={makeLogin} />
+            <Route path="/login" exact={true} component={loginFactory} />
         </Switch>
     </BrowserRouter>
 );
