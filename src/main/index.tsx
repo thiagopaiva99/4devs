@@ -4,4 +4,6 @@ import ReactDOM from 'react-dom';
 
 import '@/presentation/styles/globals.scss';
 
-ReactDOM.render(<Router />, document.getElementById('main'));
+import { makeLogin } from '@/main/factories/pages';
+
+ReactDOM.render(<Router makeLogin={makeLogin} />, document.getElementById('main'));
