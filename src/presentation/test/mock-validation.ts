@@ -1,15 +1,14 @@
-import { Validation } from "../protocols/validation";
+import { Validation } from '../protocols/validation'
 
 export class ValidationStub implements Validation {
-    errorMessage: string;
-    fieldName: string;
-    fieldValue: string;
+  errorMessage: string
+  fieldName: string
+  fieldValue: string
 
-    validate(fieldName: string, fieldValue: string): string {
-        this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
+  validate (fieldName: string, fieldValue: string): string {
+    this.fieldName = fieldName
+    this.fieldValue = fieldValue
 
-        return this.errorMessage;
-    }
-
+    return this.errorMessage
+  }
 }

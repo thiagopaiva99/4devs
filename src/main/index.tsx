@@ -1,9 +1,9 @@
-import { Router } from '@/presentation/components';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { Router } from '@/presentation/components'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-import '@/presentation/styles/globals.scss';
+import '@/presentation/styles/globals.scss'
 
-import { loginFactory } from '@/main/factories/pages';
+import { loginFactory } from '@/main/factories/pages'
 
-ReactDOM.render(<Router loginFactory={loginFactory} />, document.getElementById('main'));
+ReactDOM.render(<Router loginFactory={loginFactory} />, document.getElementById('main'))

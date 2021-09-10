@@ -14,12 +14,12 @@
   },
   "plugins": ["react", "cypress"],
   "parserOptions": {
-    "project": "./tsconfig-eslint.json"
+    "project": "./tsconfig.json"
   },
   "rules": {
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "react/jsx-uses-react": "error",
-    "react/jsx-uses-var": "error"
+    "@typescript-eslint/consistent-type-assertions": "off"
   }
 }

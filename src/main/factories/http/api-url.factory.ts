@@ -1,3 +1,3 @@
 export const apiUrlFactory = (path: string): string => {
-    return `process.env.API_URL${path}`;
-} 
+  return `http://fordevs.herokuapp.com/api${path}`
+}

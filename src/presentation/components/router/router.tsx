@@ -1,9 +1,8 @@
-import { Login } from '@/presentation/pages/login/login';
-import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import React from 'react'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 type Props = {
-    loginFactory: React.FC
+  loginFactory: React.FC
 }
 
 const Router: React.FC<Props> = ({ loginFactory }: Props) => (
@@ -12,6 +11,6 @@ const Router: React.FC<Props> = ({ loginFactory }: Props) => (
             <Route path="/login" exact={true} component={loginFactory} />
         </Switch>
     </BrowserRouter>
-);
+)
 
-export default Router;
+export default Router

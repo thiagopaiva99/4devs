@@ -1,12 +1,11 @@
-import { FieldValidation } from "@/validations/protocols";
+import { FieldValidation } from '@/validations/protocols'
 
 export class FieldValidationSpy implements FieldValidation {
-    error: Error = null;
+  error: Error = null
 
-    constructor(readonly field: string) {}
+  constructor (readonly field: string) {}
 
-    validate(value: string): Error {
-        return this.error;
-    }
-
+  validate (value: string): Error {
+    return this.error
+  }
 }
