@@ -1,5 +1,4 @@
 import React from 'react'
-// import 'jest-localstorage-mock'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 
@@ -7,12 +6,13 @@ import faker from 'faker'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 
 import { Login } from './login'
-import { AuthenticationSpy, ValidationStub } from '@/presentation/test'
+import { AuthenticationSpy, SaveAccessTokenMock, ValidationStub } from '@/presentation/test'
 import { InvalidCredentialsError } from '@/domain/errors'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
   authenticationSpy: AuthenticationSpy
+  saveAccessTokenMock: SaveAccessTokenMock
 }
 
 type FactoryParams = {
@@ -26,18 +26,24 @@ const history = createMemoryHistory({
 const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTypes => {
   const validationStub = new ValidationStub()
   validationStub.errorMessage = params?.validationError
+  const saveAccessTokenMock = new SaveAccessTokenMock()
 
   const authenticationSpy = new AuthenticationSpy()
 
   const component = render(
         <Router history={history}>
-            <Login validation={validationStub} authentication={authenticationSpy} />
+            <Login
+              validation={validationStub}
+              authentication={authenticationSpy}
+              saveAccessToken={saveAccessTokenMock}
+            />
         </Router>
   )
 
   return {
     component,
-    authenticationSpy
+    authenticationSpy,
+    saveAccessTokenMock
   }
 }
 
@@ -87,7 +93,6 @@ const validSubmitFactory = async (component: RenderResult, email = faker.interne
 
 describe('Login Component', () => {
   afterEach(cleanup)
-  beforeEach(localStorage.clear)
 
   test('should start with initial state', () => {
     const validationError = faker.random.words()
@@ -168,10 +173,10 @@ describe('Login Component', () => {
     testErrorWrapperChildCount(component, 1)
   })
 
-  test('should add acesstoken to localstorage on success', async () => {
-    const { component, authenticationSpy } = loginComponentFactory()
+  test('should call SaveAccessToken on success', async () => {
+    const { component, authenticationSpy, saveAccessTokenMock } = loginComponentFactory()
     await validSubmitFactory(component)
-    expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', authenticationSpy.account.accessToken)
+    expect(saveAccessTokenMock.accessToken).toBe(authenticationSpy.account.accessToken)
     expect(history.length).toBe(1)
     expect(history.location.pathname).toBe('/')
   })
