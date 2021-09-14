@@ -2,13 +2,27 @@ import { SetStorageSpy } from '@/data/protocols/test/mock-storage'
 import faker from 'faker'
 import { LocalSAveAccessToken } from './local-save-access-token'
 
+type StorageFactoryType = {
+  setStorageSpy: SetStorageSpy
+  localSaveAccessToken: LocalSAveAccessToken
+}
+
+const storageFactory = (): StorageFactoryType => {
+  const setStorageSpy = new SetStorageSpy()
+  const localSaveAccessToken = new LocalSAveAccessToken(setStorageSpy)
+
+  return {
+    setStorageSpy,
+    localSaveAccessToken
+  }
+}
+
 describe('LocalSAveAccessToken', () => {
   test('should call set storage with correct value', async () => {
-    const setStorage = new SetStorageSpy()
-    const localSAveAccessToken = new LocalSAveAccessToken(setStorage)
+    const { localSaveAccessToken, setStorageSpy } = storageFactory()
     const accessToken = faker.datatype.uuid()
-    await localSAveAccessToken.save(accessToken)
-    expect(setStorage.key).toBe('accessToken')
-    expect(setStorage.value).toBe(accessToken)
+    await localSaveAccessToken.save(accessToken)
+    expect(setStorageSpy.key).toBe('accessToken')
+    expect(setStorageSpy.value).toBe(accessToken)
   })
 })
