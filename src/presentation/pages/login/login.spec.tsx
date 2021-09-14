@@ -167,7 +167,7 @@ describe('Login Component', () => {
   test('should present error if authentication fails', async () => {
     const { component, authenticationSpy } = loginComponentFactory()
     const error = new InvalidCredentialsError()
-    jest.spyOn(authenticationSpy, 'auth').mockReturnValueOnce(Promise.reject(error))
+    jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
     testElementText(component, 'main-error', error.message)
     testErrorWrapperChildCount(component, 1)
@@ -179,6 +179,15 @@ describe('Login Component', () => {
     expect(saveAccessTokenMock.accessToken).toBe(authenticationSpy.account.accessToken)
     expect(history.length).toBe(1)
     expect(history.location.pathname).toBe('/')
+  })
+
+  test('should present error if SaveAccessToken fails', async () => {
+    const { component, saveAccessTokenMock } = loginComponentFactory()
+    const error = new InvalidCredentialsError()
+    jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
+    await validSubmitFactory(component)
+    testElementText(component, 'main-error', error.message)
+    testErrorWrapperChildCount(component, 1)
   })
 
   test('should go to signup page', () => {
