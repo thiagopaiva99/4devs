@@ -130,4 +130,11 @@ describe('Signup Component', () => {
     await validSubmitFactory(component, name, email, password)
     expect(addAccountSpy.params).toEqual({ name, email, password, passwordConfirmation: password })
   })
+
+  test('should call authentication only once', async () => {
+    const { component, addAccountSpy } = loginComponentFactory()
+    await validSubmitFactory(component)
+    await validSubmitFactory(component)
+    expect(addAccountSpy.callsCount).toBe(1)
+  })
 })
