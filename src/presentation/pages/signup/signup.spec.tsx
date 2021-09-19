@@ -2,32 +2,44 @@ import React from 'react'
 import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { Signup } from './signup'
 import { internet, random, name as nameFaker } from 'faker'
-import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
+import { AddAccountSpy, Helper, SaveAccessTokenMock, ValidationStub } from '@/presentation/test'
 import { EmailInUseError } from '@/domain/errors'
+import { createMemoryHistory } from 'history'
+import { Router } from 'react-router'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
   addAccountSpy: AddAccountSpy
+  saveAccessTokenMock: SaveAccessTokenMock
 }
 
 type FactoryParams = {
   validationError: string
 }
 
+const history = createMemoryHistory({
+  initialEntries: ['/signup']
+})
+
 const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTypes => {
   const validationStub = new ValidationStub()
   validationStub.errorMessage = params?.validationError
   const addAccountSpy = new AddAccountSpy()
+  const saveAccessTokenMock = new SaveAccessTokenMock()
   const component = render(
-    <Signup
-      validation={validationStub}
-      addAccount={addAccountSpy}
-    />
+    <Router history={history}>
+      <Signup
+        validation={validationStub}
+        addAccount={addAccountSpy}
+        saveAccessToken={saveAccessTokenMock}
+      />
+    </Router>
   )
 
   return {
     component,
-    addAccountSpy
+    addAccountSpy,
+    saveAccessTokenMock
   }
 }
 
@@ -153,5 +165,13 @@ describe('Signup Component', () => {
     await validSubmitFactory(component)
     Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
+  })
+
+  test('should call SaveAccessToken on success', async () => {
+    const { component, addAccountSpy, saveAccessTokenMock } = loginComponentFactory()
+    await validSubmitFactory(component)
+    expect(saveAccessTokenMock.accessToken).toBe(addAccountSpy.account.accessToken)
+    expect(history.length).toBe(1)
+    expect(history.location.pathname).toBe('/')
   })
 })
