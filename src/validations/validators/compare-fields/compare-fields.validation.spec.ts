@@ -11,4 +11,11 @@ describe('CompareFieldsValidation', () => {
     const error = validation.validate(random.word())
     expect(error).toEqual(new InvalidFieldError())
   })
+
+  test('should return falsy if compare is valid', () => {
+    const word = random.word()
+    const validation = validationFactory(word)
+    const error = validation.validate(word)
+    expect(error).toBeFalsy()
+  })
 })
