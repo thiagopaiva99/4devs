@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import Styles from './signup-styles.scss'
 import { LoginHeader, Footer, Input, FormStatus } from '@/presentation/components'
 import Context from '@/presentation/contexts/form/form-context'
-import { Link } from 'react-router-dom'
 
 const Signup: React.FC = () => {
   const [state] = useState({

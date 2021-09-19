@@ -6,7 +6,7 @@ import faker from 'faker'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 
 import { Login } from './login'
-import { AuthenticationSpy, SaveAccessTokenMock, ValidationStub } from '@/presentation/test'
+import { AuthenticationSpy, Helper, SaveAccessTokenMock, ValidationStub } from '@/presentation/test'
 import { InvalidCredentialsError } from '@/domain/errors'
 
 type LoginComponentFactoryTypes = {
@@ -57,17 +57,6 @@ const populatePasswordField = (component: RenderResult, password = faker.interne
   fireEvent.input(passwordField, { target: { value: password } })
 }
 
-const testStatusForField = (component: RenderResult, fieldName: string, validationError?: string): void => {
-  const field = component.getByTestId(`${fieldName}-status`)
-  expect(field.title).toBe(validationError || 'Tudo certo!')
-  expect(field.textContent).toBe(validationError ? '🔴' : '🟢')
-}
-
-const testErrorWrapperChildCount = (component: RenderResult, count: number): void => {
-  const errorWrapper = component.getByTestId('error-wrapper')
-  expect(errorWrapper.childElementCount).toBe(count)
-}
-
 const testElementExists = (component: RenderResult, fieldName: string): void => {
   const element = component.getByTestId(fieldName)
   expect(element).toBeTruthy()
@@ -76,11 +65,6 @@ const testElementExists = (component: RenderResult, fieldName: string): void => 
 const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
   const element = component.getByTestId(fieldName)
   expect(element.textContent).toBe(text)
-}
-
-const testButtonIsDisabled = (component: RenderResult, fieldName: string, isDisabled: boolean): void => {
-  const button = component.getByTestId(fieldName) as HTMLButtonElement
-  expect(button.disabled).toBe(isDisabled)
 }
 
 const validSubmitFactory = async (component: RenderResult, email = faker.internet.email(), password = faker.internet.password()): Promise<void> => {
@@ -97,43 +81,43 @@ describe('Login Component', () => {
   test('should start with initial state', () => {
     const validationError = faker.random.words()
     const { component } = loginComponentFactory({ validationError })
-    testErrorWrapperChildCount(component, 0)
-    testButtonIsDisabled(component, 'submit', true)
-    testStatusForField(component, 'email', validationError)
-    testStatusForField(component, 'password', validationError)
+    Helper.testChildCount(component, 'error-wrapper', 0)
+    Helper.testElementDisabledState(component, 'submit', true)
+    Helper.testStatusForField(component, 'email', validationError)
+    Helper.testStatusForField(component, 'password', validationError)
   })
 
   test('should show email error if validation fails', () => {
     const validationError = faker.random.words()
     const { component } = loginComponentFactory({ validationError })
     populateEmailField(component)
-    testStatusForField(component, 'email', validationError)
+    Helper.testStatusForField(component, 'email', validationError)
   })
 
   test('should show password error if validation fails', () => {
     const validationError = faker.random.words()
     const { component } = loginComponentFactory({ validationError })
     populatePasswordField(component)
-    testStatusForField(component, 'password', validationError)
+    Helper.testStatusForField(component, 'password', validationError)
   })
 
   test('should show valid email state if validation succeeds', () => {
     const { component } = loginComponentFactory()
     populateEmailField(component)
-    testStatusForField(component, 'email')
+    Helper.testStatusForField(component, 'email')
   })
 
   test('should show valid password state if validation succeeds', () => {
     const { component } = loginComponentFactory()
     populatePasswordField(component)
-    testStatusForField(component, 'email')
+    Helper.testStatusForField(component, 'email')
   })
 
   test('should enable submit button if form is valid', () => {
     const { component } = loginComponentFactory()
     populateEmailField(component)
     populatePasswordField(component)
-    testButtonIsDisabled(component, 'submit', false)
+    Helper.testElementDisabledState(component, 'submit', false)
   })
 
   test('should show spinner on submit', async () => {
@@ -170,7 +154,7 @@ describe('Login Component', () => {
     jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
     testElementText(component, 'main-error', error.message)
-    testErrorWrapperChildCount(component, 1)
+    Helper.testChildCount(component, 'error-wrapper', 1)
   })
 
   test('should call SaveAccessToken on success', async () => {
@@ -187,7 +171,7 @@ describe('Login Component', () => {
     jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
     testElementText(component, 'main-error', error.message)
-    testErrorWrapperChildCount(component, 1)
+    Helper.testChildCount(component, 'error-wrapper', 1)
   })
 
   test('should go to signup page', () => {
