@@ -21,3 +21,8 @@ export const populateField = (component: RenderResult, fieldName: string, value 
   const inputField = component.getByTestId(`${fieldName}-field`)
   fireEvent.input(inputField, { target: { value } })
 }
+
+export const testElementExists = (component: RenderResult, fieldName: string): void => {
+  const element = component.getByTestId(fieldName)
+  expect(element).toBeTruthy()
+}

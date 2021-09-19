@@ -47,11 +47,6 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
-const testElementExists = (component: RenderResult, fieldName: string): void => {
-  const element = component.getByTestId(fieldName)
-  expect(element).toBeTruthy()
-}
-
 const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
   const element = component.getByTestId(fieldName)
   expect(element.textContent).toBe(text)
@@ -113,7 +108,7 @@ describe('Login Component', () => {
   test('should show spinner on submit', async () => {
     const { component } = loginComponentFactory()
     await validSubmitFactory(component)
-    testElementExists(component, 'spinner')
+    Helper.testElementExists(component, 'spinner')
   })
 
   test('should call authentication with correct values', async () => {

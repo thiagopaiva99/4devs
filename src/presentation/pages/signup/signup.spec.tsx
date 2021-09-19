@@ -26,6 +26,16 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
+const validSubmitFactory = async (component: RenderResult, nameValue = name.findName(), email = internet.email(), password = internet.password()): Promise<void> => {
+  Helper.populateField(component, 'name', nameValue)
+  Helper.populateField(component, 'email', email)
+  Helper.populateField(component, 'password', password)
+  Helper.populateField(component, 'passwordConfirmation', password)
+  const form = component.getByTestId('form')
+  fireEvent.submit(form)
+  await waitFor(() => form)
+}
+
 describe('Signup Component', () => {
   afterEach(cleanup)
 
@@ -100,5 +110,11 @@ describe('Signup Component', () => {
     Helper.populateField(component, 'password', password)
     Helper.populateField(component, 'passwordConfirmation', password)
     Helper.testElementDisabledState(component, 'submit', false)
+  })
+
+  test('should show spinner on submit', async () => {
+    const { component } = loginComponentFactory()
+    await validSubmitFactory(component)
+    Helper.testElementExists(component, 'spinner')
   })
 })
