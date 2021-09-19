@@ -37,7 +37,7 @@ describe('Signup Component', () => {
     Helper.testStatusForField(component, 'name', validationError)
     Helper.testStatusForField(component, 'email', validationError)
     Helper.testStatusForField(component, 'password', validationError)
-    Helper.testStatusForField(component, 'passwordConfirmation', 'Campo obrigatório')
+    Helper.testStatusForField(component, 'passwordConfirmation', validationError)
   })
 
   test('should show name error if validation fails', () => {
@@ -59,5 +59,12 @@ describe('Signup Component', () => {
     const { component } = loginComponentFactory({ validationError })
     Helper.populateField(component, 'password')
     Helper.testStatusForField(component, 'password', validationError)
+  })
+
+  test('should show password confirmation error if validation fails', () => {
+    const validationError = random.words()
+    const { component } = loginComponentFactory({ validationError })
+    Helper.populateField(component, 'passwordConfirmation')
+    Helper.testStatusForField(component, 'passwordConfirmation', validationError)
   })
 })
