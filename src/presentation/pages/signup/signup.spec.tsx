@@ -137,4 +137,11 @@ describe('Signup Component', () => {
     await validSubmitFactory(component)
     expect(addAccountSpy.callsCount).toBe(1)
   })
+
+  test('should not call authentication if form is invalid', async () => {
+    const validationError = random.words()
+    const { component, addAccountSpy } = loginComponentFactory({ validationError })
+    await validSubmitFactory(component)
+    expect(addAccountSpy.callsCount).toBe(0)
+  })
 })
