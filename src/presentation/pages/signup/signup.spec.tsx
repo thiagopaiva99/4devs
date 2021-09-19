@@ -41,11 +41,6 @@ const validSubmitFactory = async (component: RenderResult, name = nameFaker.find
   await waitFor(() => form)
 }
 
-const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
-  const element = component.getByTestId(fieldName)
-  expect(element.textContent).toBe(text)
-}
-
 describe('Signup Component', () => {
   afterEach(cleanup)
 
@@ -156,7 +151,7 @@ describe('Signup Component', () => {
     const error = new EmailInUseError()
     jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
-    testElementText(component, 'main-error', error.message)
+    Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
   })
 })

@@ -47,11 +47,6 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
-const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
-  const element = component.getByTestId(fieldName)
-  expect(element.textContent).toBe(text)
-}
-
 const validSubmitFactory = async (component: RenderResult, email = internet.email(), password = internet.password()): Promise<void> => {
   Helper.populateField(component, 'email', email)
   Helper.populateField(component, 'password', password)
@@ -138,7 +133,7 @@ describe('Login Component', () => {
     const error = new InvalidCredentialsError()
     jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
-    testElementText(component, 'main-error', error.message)
+    Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
   })
 
@@ -155,7 +150,7 @@ describe('Login Component', () => {
     const error = new InvalidCredentialsError()
     jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
-    testElementText(component, 'main-error', error.message)
+    Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
   })
 

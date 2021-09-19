@@ -26,3 +26,8 @@ export const testElementExists = (component: RenderResult, fieldName: string): v
   const element = component.getByTestId(fieldName)
   expect(element).toBeTruthy()
 }
+
+export const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
+  const element = component.getByTestId(fieldName)
+  expect(element.textContent).toBe(text)
+}
