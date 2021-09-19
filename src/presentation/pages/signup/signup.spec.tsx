@@ -1,11 +1,12 @@
 import React from 'react'
 import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { Signup } from './signup'
-import { internet, random, name } from 'faker'
-import { Helper, ValidationStub } from '@/presentation/test'
+import { internet, random, name as nameFaker } from 'faker'
+import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
+  addAccountSpy: AddAccountSpy
 }
 
 type FactoryParams = {
@@ -15,19 +16,22 @@ type FactoryParams = {
 const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTypes => {
   const validationStub = new ValidationStub()
   validationStub.errorMessage = params?.validationError
+  const addAccountSpy = new AddAccountSpy()
   const component = render(
     <Signup
       validation={validationStub}
+      addAccount={addAccountSpy}
     />
   )
 
   return {
-    component
+    component,
+    addAccountSpy
   }
 }
 
-const validSubmitFactory = async (component: RenderResult, nameValue = name.findName(), email = internet.email(), password = internet.password()): Promise<void> => {
-  Helper.populateField(component, 'name', nameValue)
+const validSubmitFactory = async (component: RenderResult, name = nameFaker.findName(), email = internet.email(), password = internet.password()): Promise<void> => {
+  Helper.populateField(component, 'name', name)
   Helper.populateField(component, 'email', email)
   Helper.populateField(component, 'password', password)
   Helper.populateField(component, 'passwordConfirmation', password)
@@ -105,7 +109,7 @@ describe('Signup Component', () => {
   test('should enable submit button if form is valid', () => {
     const { component } = loginComponentFactory()
     const password = internet.password()
-    Helper.populateField(component, 'name', name.findName())
+    Helper.populateField(component, 'name', nameFaker.findName())
     Helper.populateField(component, 'email', internet.email())
     Helper.populateField(component, 'password', password)
     Helper.populateField(component, 'passwordConfirmation', password)
@@ -116,5 +120,14 @@ describe('Signup Component', () => {
     const { component } = loginComponentFactory()
     await validSubmitFactory(component)
     Helper.testElementExists(component, 'spinner')
+  })
+
+  test('should call addAccount with correct values', async () => {
+    const { component, addAccountSpy } = loginComponentFactory()
+    const name = nameFaker.findName()
+    const email = internet.email()
+    const password = internet.password()
+    await validSubmitFactory(component, name, email, password)
+    expect(addAccountSpy.params).toEqual({ name, email, password, passwordConfirmation: password })
   })
 })
