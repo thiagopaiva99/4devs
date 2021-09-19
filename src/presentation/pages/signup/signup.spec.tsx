@@ -183,4 +183,12 @@ describe('Signup Component', () => {
     Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
   })
+
+  test('should go to login page', () => {
+    const { component } = loginComponentFactory()
+    const login = component.getByTestId('login')
+    fireEvent.click(login)
+    expect(history.length).toBe(1)
+    expect(history.location.pathname).toBe('/login')
+  })
 })
