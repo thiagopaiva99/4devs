@@ -35,7 +35,7 @@ describe('Signup Component', () => {
     Helper.testChildCount(component, 'error-wrapper', 0)
     Helper.testElementDisabledState(component, 'submit', true)
     Helper.testStatusForField(component, 'name', validationError)
-    Helper.testStatusForField(component, 'email', 'Campo obrigatório')
+    Helper.testStatusForField(component, 'email', validationError)
     Helper.testStatusForField(component, 'password', 'Campo obrigatório')
     Helper.testStatusForField(component, 'passwordConfirmation', 'Campo obrigatório')
   })
@@ -45,5 +45,12 @@ describe('Signup Component', () => {
     const { component } = loginComponentFactory({ validationError })
     Helper.populateField(component, 'name')
     Helper.testStatusForField(component, 'name', validationError)
+  })
+
+  test('should show email error if validation fails', () => {
+    const validationError = random.words()
+    const { component } = loginComponentFactory({ validationError })
+    Helper.populateField(component, 'email')
+    Helper.testStatusForField(component, 'email', validationError)
   })
 })
