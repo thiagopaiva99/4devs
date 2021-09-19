@@ -2,7 +2,7 @@ import React from 'react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 
-import faker from 'faker'
+import { internet, random } from 'faker'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 
 import { Login } from './login'
@@ -47,16 +47,6 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
-const populateEmailField = (component: RenderResult, email = faker.internet.email()): void => {
-  const emailInput = component.getByTestId('email-field')
-  fireEvent.input(emailInput, { target: { value: email } })
-}
-
-const populatePasswordField = (component: RenderResult, password = faker.internet.password()): void => {
-  const passwordField = component.getByTestId('password-field')
-  fireEvent.input(passwordField, { target: { value: password } })
-}
-
 const testElementExists = (component: RenderResult, fieldName: string): void => {
   const element = component.getByTestId(fieldName)
   expect(element).toBeTruthy()
@@ -67,9 +57,9 @@ const testElementText = (component: RenderResult, fieldName: string, text: strin
   expect(element.textContent).toBe(text)
 }
 
-const validSubmitFactory = async (component: RenderResult, email = faker.internet.email(), password = faker.internet.password()): Promise<void> => {
-  populateEmailField(component, email)
-  populatePasswordField(component, password)
+const validSubmitFactory = async (component: RenderResult, email = internet.email(), password = internet.password()): Promise<void> => {
+  Helper.populateField(component, 'email', email)
+  Helper.populateField(component, 'password', password)
   const form = component.getByTestId('form')
   fireEvent.submit(form)
   await waitFor(() => form)
@@ -79,7 +69,7 @@ describe('Login Component', () => {
   afterEach(cleanup)
 
   test('should start with initial state', () => {
-    const validationError = faker.random.words()
+    const validationError = random.words()
     const { component } = loginComponentFactory({ validationError })
     Helper.testChildCount(component, 'error-wrapper', 0)
     Helper.testElementDisabledState(component, 'submit', true)
@@ -88,35 +78,35 @@ describe('Login Component', () => {
   })
 
   test('should show email error if validation fails', () => {
-    const validationError = faker.random.words()
+    const validationError = random.words()
     const { component } = loginComponentFactory({ validationError })
-    populateEmailField(component)
+    Helper.populateField(component, 'email', internet.email())
     Helper.testStatusForField(component, 'email', validationError)
   })
 
   test('should show password error if validation fails', () => {
-    const validationError = faker.random.words()
+    const validationError = random.words()
     const { component } = loginComponentFactory({ validationError })
-    populatePasswordField(component)
+    Helper.populateField(component, 'password', internet.password())
     Helper.testStatusForField(component, 'password', validationError)
   })
 
   test('should show valid email state if validation succeeds', () => {
     const { component } = loginComponentFactory()
-    populateEmailField(component)
+    Helper.populateField(component, 'email', internet.email())
     Helper.testStatusForField(component, 'email')
   })
 
   test('should show valid password state if validation succeeds', () => {
     const { component } = loginComponentFactory()
-    populatePasswordField(component)
+    Helper.populateField(component, 'password', internet.password())
     Helper.testStatusForField(component, 'email')
   })
 
   test('should enable submit button if form is valid', () => {
     const { component } = loginComponentFactory()
-    populateEmailField(component)
-    populatePasswordField(component)
+    Helper.populateField(component, 'email', internet.email())
+    Helper.populateField(component, 'password', internet.password())
     Helper.testElementDisabledState(component, 'submit', false)
   })
 
@@ -128,8 +118,8 @@ describe('Login Component', () => {
 
   test('should call authentication with correct values', async () => {
     const { component, authenticationSpy } = loginComponentFactory()
-    const email = faker.internet.email()
-    const password = faker.internet.password()
+    const email = internet.email()
+    const password = internet.password()
     await validSubmitFactory(component, email, password)
     expect(authenticationSpy.params).toEqual({ email, password })
   })
@@ -142,7 +132,7 @@ describe('Login Component', () => {
   })
 
   test('should not call authentication if form is invalid', async () => {
-    const validationError = faker.random.words()
+    const validationError = random.words()
     const { component, authenticationSpy } = loginComponentFactory({ validationError })
     await validSubmitFactory(component)
     expect(authenticationSpy.callsCount).toBe(0)

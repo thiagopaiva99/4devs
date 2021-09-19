@@ -26,11 +26,6 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
-const populateField = (component: RenderResult, fieldName: string, value = random.word()): void => {
-  const inputField = component.getByTestId(`${fieldName}-field`)
-  fireEvent.input(inputField, { target: { value } })
-}
-
 describe('Signup Component', () => {
   afterEach(cleanup)
 
@@ -48,7 +43,7 @@ describe('Signup Component', () => {
   test('should show name error if validation fails', () => {
     const validationError = random.words()
     const { component } = loginComponentFactory({ validationError })
-    populateField(component, 'name')
+    Helper.populateField(component, 'name')
     Helper.testStatusForField(component, 'name', validationError)
   })
 })
