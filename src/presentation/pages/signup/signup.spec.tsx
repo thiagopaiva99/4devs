@@ -79,4 +79,10 @@ describe('Signup Component', () => {
     Helper.populateField(component, 'email', internet.email())
     Helper.testStatusForField(component, 'email')
   })
+
+  test('should show valid password state if validation succeeds', () => {
+    const { component } = loginComponentFactory()
+    Helper.populateField(component, 'password', internet.password())
+    Helper.testStatusForField(component, 'password')
+  })
 })
