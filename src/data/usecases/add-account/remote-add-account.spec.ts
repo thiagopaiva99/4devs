@@ -1,4 +1,6 @@
+import { HttpStatusCode } from '@/data/protocols/http'
 import { HttpPostClientSpy } from '@/data/test'
+import { EmailInUseError } from '@/domain/errors'
 import { AccountModel } from '@/domain/models'
 import { mockAddAccountParams } from '@/domain/test'
 import { AddAccountParams } from '@/domain/usecases'
@@ -33,5 +35,14 @@ describe('Remote Authentication', () => {
     const addAccountBody = mockAddAccountParams()
     await sut.add(addAccountBody)
     expect(httpPostClientSpy.body).toEqual(addAccountBody)
+  })
+
+  test('should throw EmailInUseeError if HttpPostClient returns 401', async () => {
+    const { sut, httpPostClientSpy } = sutFactory()
+    httpPostClientSpy.response = {
+      statusCode: HttpStatusCode.FORBIDDEN
+    }
+    const promise = sut.add(mockAddAccountParams())
+    await expect(promise).rejects.toThrow(new EmailInUseError())
   })
 })
