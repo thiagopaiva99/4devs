@@ -54,4 +54,13 @@ describe('Remote Authentication', () => {
     const promise = sut.add(mockAddAccountParams())
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  test('should throw UnexpectedError if HttpPostClient returns 500', async () => {
+    const { sut, httpPostClientSpy } = sutFactory()
+    httpPostClientSpy.response = {
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    }
+    const promise = sut.add(mockAddAccountParams())
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
