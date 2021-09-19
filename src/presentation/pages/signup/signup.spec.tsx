@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { Signup } from './signup'
-import { internet, random } from 'faker'
+import { internet, random, name } from 'faker'
 import { Helper, ValidationStub } from '@/presentation/test'
 
 type LoginComponentFactoryTypes = {
@@ -90,5 +90,15 @@ describe('Signup Component', () => {
     const { component } = loginComponentFactory()
     Helper.populateField(component, 'passwordConfirmation', internet.password())
     Helper.testStatusForField(component, 'passwordConfirmation')
+  })
+
+  test('should enable submit button if form is valid', () => {
+    const { component } = loginComponentFactory()
+    const password = internet.password()
+    Helper.populateField(component, 'name', name.findName())
+    Helper.populateField(component, 'email', internet.email())
+    Helper.populateField(component, 'password', password)
+    Helper.populateField(component, 'passwordConfirmation', password)
+    Helper.testElementDisabledState(component, 'submit', false)
   })
 })
