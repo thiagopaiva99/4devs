@@ -3,6 +3,7 @@ import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-libr
 import { Signup } from './signup'
 import { internet, random, name as nameFaker } from 'faker'
 import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
+import { EmailInUseError } from '@/domain/errors'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
@@ -38,6 +39,11 @@ const validSubmitFactory = async (component: RenderResult, name = nameFaker.find
   const form = component.getByTestId('form')
   fireEvent.submit(form)
   await waitFor(() => form)
+}
+
+const testElementText = (component: RenderResult, fieldName: string, text: string): void => {
+  const element = component.getByTestId(fieldName)
+  expect(element.textContent).toBe(text)
 }
 
 describe('Signup Component', () => {
@@ -143,5 +149,14 @@ describe('Signup Component', () => {
     const { component, addAccountSpy } = loginComponentFactory({ validationError })
     await validSubmitFactory(component)
     expect(addAccountSpy.callsCount).toBe(0)
+  })
+
+  test('should present error if add account fails', async () => {
+    const { component, addAccountSpy } = loginComponentFactory()
+    const error = new EmailInUseError()
+    jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
+    await validSubmitFactory(component)
+    testElementText(component, 'main-error', error.message)
+    Helper.testChildCount(component, 'error-wrapper', 1)
   })
 })
