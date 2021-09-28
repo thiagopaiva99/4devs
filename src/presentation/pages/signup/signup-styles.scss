@@ -25,16 +25,6 @@
 
     button {
       margin-top: 2rem;
-
-      &:disabled {
-        background-color: $disabledBackground;
-        cursor: default;
-        color: $disabledColor;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
     }
 
     .link {
