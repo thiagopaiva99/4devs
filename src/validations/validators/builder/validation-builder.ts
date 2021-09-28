@@ -1,5 +1,5 @@
 import { FieldValidation } from '@/validations/protocols'
-import { EmailValidation, MinLengthValidation, RequiredFieldValidation } from '@/validations/validators'
+import { CompareFieldsValidation, EmailValidation, MinLengthValidation, RequiredFieldValidation } from '@/validations/validators'
 
 export class ValidationBuilder {
   private constructor (
@@ -7,8 +7,8 @@ export class ValidationBuilder {
     private readonly validations: FieldValidation[]
   ) {}
 
-  static field (fieldName: string): ValidationBuilder {
-    return new ValidationBuilder(fieldName, [])
+  static field (field: string): ValidationBuilder {
+    return new ValidationBuilder(field, [])
   }
 
   required (): ValidationBuilder {
@@ -23,6 +23,11 @@ export class ValidationBuilder {
 
   email (): ValidationBuilder {
     this.validations.push(new EmailValidation(this.fieldName))
+    return this
+  }
+
+  sameAs (fieldToCompare: string): ValidationBuilder {
+    this.validations.push(new CompareFieldsValidation(this.fieldName, fieldToCompare))
     return this
   }
 

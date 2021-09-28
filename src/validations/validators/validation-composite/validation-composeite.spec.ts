@@ -1,7 +1,7 @@
 import { ValidationComposite } from './validation-composite'
 import { FieldValidationSpy } from '@/validations/test'
 
-import faker from 'faker'
+import { database, random } from 'faker'
 
 type ValidationFactoryTypes = {
   validation: ValidationComposite
@@ -23,19 +23,19 @@ const validationFactory = (fieldName: string): ValidationFactoryTypes => {
 
 describe('ValidationComposite', () => {
   test('should return error if any validation fails', () => {
-    const fieldName = faker.database.column()
+    const fieldName = database.column()
     const { validation, fieldValidationsSpy } = validationFactory(fieldName)
-    const errorMessage = faker.random.words()
+    const errorMessage = random.words()
     fieldValidationsSpy[0].error = new Error(errorMessage)
-    fieldValidationsSpy[1].error = new Error(faker.random.words())
-    const error = validation.validate(fieldName, faker.random.word())
+    fieldValidationsSpy[1].error = new Error(random.words())
+    const error = validation.validate(fieldName, { [fieldName]: random.word() })
     expect(error).toBe(errorMessage)
   })
 
   test('should return falsy if none validation fails', () => {
-    const fieldName = faker.database.column()
+    const fieldName = database.column()
     const { validation } = validationFactory(fieldName)
-    const error = validation.validate(fieldName, faker.random.word())
+    const error = validation.validate(fieldName, { [fieldName]: random.word() })
     expect(error).toBeFalsy()
   })
 })
