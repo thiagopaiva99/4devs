@@ -4,6 +4,12 @@ import ReactDOM from 'react-dom'
 
 import '@/presentation/styles/globals.scss'
 
-import { loginFactory } from '@/main/factories/pages'
+import { loginFactory, signupFactory } from '@/main/factories/pages'
 
-ReactDOM.render(<Router loginFactory={loginFactory} />, document.getElementById('main'))
+ReactDOM.render(
+    <Router
+        loginFactory={loginFactory}
+        signupFactory={signupFactory}
+    />,
+    document.getElementById('main')
+)
