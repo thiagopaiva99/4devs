@@ -6,15 +6,15 @@ export const httpPostMockFactory = (): HttpPostParams<any> => ({
   body: random.objectElement()
 })
 
-export class HttpPostClientSpy<T, R> implements HttpPostClient<T, R> {
+export class HttpPostClientSpy<Response> implements HttpPostClient<Response> {
   url?: string
-  body?: T
+  body?: any
 
-  response: HttpResponse<R> = {
+  response: HttpResponse<Response> = {
     statusCode: HttpStatusCode.OK
   }
 
-  async post (params: HttpPostParams<T>): Promise<HttpResponse<R>> {
+  async post (params: HttpPostParams<any>): Promise<HttpResponse<Response>> {
     this.url = params.url
     this.body = params.body
 

@@ -5,6 +5,6 @@ export type HttpPostParams<T> = {
   body?: T
 }
 
-export interface HttpPostClient<T, R> {
-  post: (params: HttpPostParams<T>) => Promise<HttpResponse<R>>
+export interface HttpPostClient<R = any> {
+  post: (params: HttpPostParams<any>) => Promise<HttpResponse<R>>
 }
