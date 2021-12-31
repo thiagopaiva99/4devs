@@ -28,8 +28,12 @@ describe('AxiosHttpClient', () => {
 
     test('should return the correct status code and body on axios.post', async () => {
       const { axiosClient, mockedAxios } = axiosFactory()
-      const promiseResponse = axiosClient.post(httpPostMockFactory())
-      expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+      const httpResponse = await axiosClient.post(httpPostMockFactory())
+      const axiosResponse = await mockedAxios.post.mock.results[0].value
+      expect(httpResponse).toEqual({
+        statusCode: axiosResponse.status,
+        body: axiosResponse.data
+      })
     })
 
     test('should return the correct status code and body on failure on axios.post', async () => {
