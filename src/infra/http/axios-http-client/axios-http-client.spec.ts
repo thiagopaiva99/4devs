@@ -61,5 +61,12 @@ describe('AxiosHttpClient', () => {
         body: axiosResponse.data
       })
     })
+
+    test('should return the correct status code and body on failure on axios.post', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      mockedAxios.get.mockRejectedValueOnce({ response: mockHttpResponse() })
+      const promiseResponse = axiosClient.get(httpGetMockFactory())
+      expect(promiseResponse).toEqual(mockedAxios.get.mock.results[0].value)
+    })
   })
 })
