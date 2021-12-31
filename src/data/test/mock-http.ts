@@ -6,6 +6,10 @@ export const httpPostMockFactory = (): HttpPostParams<any> => ({
   body: random.objectElement()
 })
 
+export const httpGetMockFactory = (): HttpGetParams => ({
+  url: internet.url()
+})
+
 export class HttpPostClientSpy<Response> implements HttpPostClient<Response> {
   url?: string
   body?: any
