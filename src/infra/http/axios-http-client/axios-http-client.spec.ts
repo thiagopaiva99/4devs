@@ -47,5 +47,15 @@ describe('AxiosHttpClient', () => {
       await axiosClient.get(mockedGetParams)
       expect(mockedAxios.get).toHaveBeenCalledWith(mockedGetParams.url)
     })
+
+    test('should return correct response on axios.get', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      const httpResponse = await axiosClient.get(httpGetMockFactory())
+      const axiosResponse = await mockedAxios.get.mock.results[0].value
+      expect(httpResponse).toEqual({
+        statusCode: axiosResponse.status,
+        body: axiosResponse.data
+      })
+    })
   })
 })
