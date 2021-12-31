@@ -42,4 +42,13 @@ describe('RemoteLoadSurveyList', () => {
     const promise = remoteSurveyList.loadAll()
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  test('should throw UnexpectedError if HttpGetClient returns 500', async () => {
+    const { remoteSurveyList, httpGetClientSpy } = surveyFactory()
+    httpGetClientSpy.response = {
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    }
+    const promise = remoteSurveyList.loadAll()
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
