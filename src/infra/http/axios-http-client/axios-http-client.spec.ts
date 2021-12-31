@@ -18,23 +18,47 @@ const axiosFactory = (): SutTypes => {
 }
 
 describe('AxiosHttpClient', () => {
-  test('should call axios with correct URL, verb and body', async () => {
-    const mockedPostParams = httpPostMockFactory()
-    const { axiosClient, mockedAxios } = axiosFactory()
-    await axiosClient.post(mockedPostParams)
-    expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body)
+  describe('Post', () => {
+    test('should call axios.post with correct URL, verb and body', async () => {
+      const mockedPostParams = httpPostMockFactory()
+      const { axiosClient, mockedAxios } = axiosFactory()
+      await axiosClient.post(mockedPostParams)
+      expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body)
+    })
+
+    test('should return the correct status code and body on axios.post', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      const promiseResponse = axiosClient.post(httpPostMockFactory())
+      expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+    })
+
+    test('should return the correct status code and body on failure on axios.post', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      mockedAxios.post.mockRejectedValueOnce({ response: mockHttpResponse() })
+      const promiseResponse = axiosClient.post(httpPostMockFactory())
+      expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+    })
   })
 
-  test('should return the correct status code and body', async () => {
-    const { axiosClient, mockedAxios } = axiosFactory()
-    const promiseResponse = axiosClient.post(httpPostMockFactory())
-    expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
-  })
+  describe('Get', () => {
+    test('should call axios.get with correct URL, verb and body', async () => {
+      const mockedPostParams = httpPostMockFactory()
+      const { axiosClient, mockedAxios } = axiosFactory()
+      await axiosClient.post(mockedPostParams)
+      expect(mockedAxios.post).toHaveBeenCalledWith(mockedPostParams.url, mockedPostParams.body)
+    })
 
-  test('should return the correct status code and body on failure', async () => {
-    const { axiosClient, mockedAxios } = axiosFactory()
-    mockedAxios.post.mockRejectedValueOnce({ response: mockHttpResponse() })
-    const promiseResponse = axiosClient.post(httpPostMockFactory())
-    expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+    test('should return the correct status code and body on axios.get', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      const promiseResponse = axiosClient.post(httpPostMockFactory())
+      expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+    })
+
+    test('should return the correct status code and body on failure on axios.get', async () => {
+      const { axiosClient, mockedAxios } = axiosFactory()
+      mockedAxios.post.mockRejectedValueOnce({ response: mockHttpResponse() })
+      const promiseResponse = axiosClient.post(httpPostMockFactory())
+      expect(promiseResponse).toEqual(mockedAxios.post.mock.results[0].value)
+    })
   })
 })
