@@ -33,4 +33,13 @@ describe('RemoteLoadSurveyList', () => {
     const promise = remoteSurveyList.loadAll()
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  test('should throw UnexpectedError if HttpGetClient returns 404', async () => {
+    const { remoteSurveyList, httpGetClientSpy } = surveyFactory()
+    httpGetClientSpy.response = {
+      statusCode: HttpStatusCode.NOT_FOUND
+    }
+    const promise = remoteSurveyList.loadAll()
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
