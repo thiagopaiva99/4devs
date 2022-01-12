@@ -119,3 +119,38 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .surveyListWrap {
+    .contentWrap {
+      ul {
+        flex-direction: row;
+
+        li {
+          flex-basis: 100%;
+
+          .surveyContent {
+            p {
+              flex-grow: 1;
+            }
+          }
+
+          footer {
+            background: $primary;
+            color: $white;
+            line-height: 40px;
+            text-transform: lowercase;
+            text-align: center;
+            cursor: pointer;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+
+            &:hover {
+              background: $primaryDark;
+            }
+          }
+        }
+      }
+    }
+  }
+}
