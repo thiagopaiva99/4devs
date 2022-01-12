@@ -21,4 +21,4 @@ const Icon: React.FC<Props> = ({ iconName, className }: Props) => {
   )
 }
 
-export { Icon }
+export default Icon
