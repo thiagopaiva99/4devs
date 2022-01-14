@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
-  background: $disabledBackground;
+  background-color: $disabledBackground;
 
   .contentWrap {
     display: flex;
@@ -14,8 +14,7 @@
     max-width: 800px;
     width: 100%;
     flex-grow: 1;
-    align-items: flex-start;
-    padding: 24px 40px;
+    padding: 40px;
 
     h2 {
       color: $primaryDark;
