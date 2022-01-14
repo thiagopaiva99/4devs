@@ -29,7 +29,7 @@ describe('LocalUpdateCurrentAccount', () => {
 
   test('should throw if set storage throws', async () => {
     const { localUpdateCurrentAccount, setStorageSpy } = storageFactory()
-    jest.spyOn(setStorageSpy, 'set').mockRejectedValueOnce(new Error())
+    jest.spyOn(setStorageSpy, 'set').mockImplementationOnce(() => { throw new Error() })
     const promise = localUpdateCurrentAccount.save(mockAccountModel())
     await expect(promise).rejects.toThrow(new Error())
   })

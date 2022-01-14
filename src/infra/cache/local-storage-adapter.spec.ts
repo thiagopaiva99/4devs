@@ -6,11 +6,11 @@ const localStorageAdapterFactory = (): LocalStorageAdapter => new LocalStorageAd
 describe('LocalStorageAdapter', () => {
   beforeEach(localStorage.clear)
 
-  test('should call localStorage with correct values', async () => {
+  test('should call localStorage with correct values', () => {
     const localStorageAdapter = localStorageAdapterFactory()
     const key = faker.database.column()
     const value = faker.random.word()
-    await localStorageAdapter.set(key, value)
+    localStorageAdapter.set(key, value)
     expect(localStorage.setItem).toHaveBeenCalledWith(key, value)
   })
 })
