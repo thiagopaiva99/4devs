@@ -1,5 +1,5 @@
 import { AuthenticationParams } from '@/domain/usecases'
-import { internet, datatype } from 'faker'
+import { internet, datatype, name as fakerName } from 'faker'
 import { AccountModel } from '@/domain/models'
 
 export const mockAuthentication = (): AuthenticationParams => ({
@@ -8,5 +8,6 @@ export const mockAuthentication = (): AuthenticationParams => ({
 })
 
 export const mockAccountModel = (): AccountModel => ({
-  accessToken: datatype.uuid()
+  accessToken: datatype.uuid(),
+  name: fakerName.findName()
 })

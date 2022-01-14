@@ -6,13 +6,13 @@ import { internet, random } from 'faker'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 
 import { Login } from './login'
-import { AuthenticationSpy, Helper, SaveAccessTokenMock, ValidationStub } from '@/presentation/test'
+import { AuthenticationSpy, Helper, UpdateCurrentAccountMock, ValidationStub } from '@/presentation/test'
 import { InvalidCredentialsError } from '@/domain/errors'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
   authenticationSpy: AuthenticationSpy
-  saveAccessTokenMock: SaveAccessTokenMock
+  updateCurrentAccountMock: UpdateCurrentAccountMock
 }
 
 type FactoryParams = {
@@ -26,7 +26,7 @@ const history = createMemoryHistory({
 const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTypes => {
   const validationStub = new ValidationStub()
   validationStub.errorMessage = params?.validationError
-  const saveAccessTokenMock = new SaveAccessTokenMock()
+  const updateCurrentAccountMock = new UpdateCurrentAccountMock()
 
   const authenticationSpy = new AuthenticationSpy()
 
@@ -35,7 +35,7 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
             <Login
               validation={validationStub}
               authentication={authenticationSpy}
-              saveAccessToken={saveAccessTokenMock}
+              updateCurrentAccount={updateCurrentAccountMock}
             />
         </Router>
   )
@@ -43,7 +43,7 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   return {
     component,
     authenticationSpy,
-    saveAccessTokenMock
+    updateCurrentAccountMock: updateCurrentAccountMock
   }
 }
 
@@ -138,17 +138,17 @@ describe('Login Component', () => {
   })
 
   test('should call SaveAccessToken on success', async () => {
-    const { component, authenticationSpy, saveAccessTokenMock } = loginComponentFactory()
+    const { component, authenticationSpy, updateCurrentAccountMock } = loginComponentFactory()
     await validSubmitFactory(component)
-    expect(saveAccessTokenMock.accessToken).toBe(authenticationSpy.account.accessToken)
+    expect(updateCurrentAccountMock.account.accessToken).toBe(authenticationSpy.account.accessToken)
     expect(history.length).toBe(1)
     expect(history.location.pathname).toBe('/')
   })
 
   test('should present error if SaveAccessToken fails', async () => {
-    const { component, saveAccessTokenMock } = loginComponentFactory()
+    const { component, updateCurrentAccountMock } = loginComponentFactory()
     const error = new InvalidCredentialsError()
-    jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
+    jest.spyOn(updateCurrentAccountMock, 'save').mockRejectedValueOnce(error)
     await validSubmitFactory(component)
     Helper.testElementText(component, 'main-error', error.message)
     Helper.testChildCount(component, 'error-wrapper', 1)
