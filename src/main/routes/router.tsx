@@ -1,13 +1,9 @@
 import { SurveyList } from '@/presentation/pages'
 import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { loginFactory, signupFactory } from '../factories/pages'
 
-type Factory = {
-  loginFactory: React.FC
-  signupFactory: React.FC
-}
-
-const Router: React.FC<Factory> = ({ loginFactory, signupFactory }: Factory) => (
+const Router: React.FC = () => (
     <BrowserRouter>
         <Switch>
             <Route path="/login" exact component={loginFactory} />

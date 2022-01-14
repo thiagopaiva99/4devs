@@ -1,15 +1,10 @@
-import { Router } from '@/presentation/components'
+import Router from './routes/router'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
 import '@/presentation/styles/globals.scss'
 
-import { loginFactory, signupFactory } from '@/main/factories/pages'
-
 ReactDOM.render(
-    <Router
-        loginFactory={loginFactory}
-        signupFactory={signupFactory}
-    />,
+    <Router />,
     document.getElementById('main')
 )
