@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-library/react'
+import { render, RenderResult, fireEvent, waitFor, cleanup, screen } from '@testing-library/react'
 import { Signup } from './signup'
 import { internet, random, name as nameFaker } from 'faker'
 import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
@@ -47,141 +47,139 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   }
 }
 
-const validSubmitFactory = async (component: RenderResult, name = nameFaker.findName(), email = internet.email(), password = internet.password()): Promise<void> => {
-  Helper.populateField(component, 'name', name)
-  Helper.populateField(component, 'email', email)
-  Helper.populateField(component, 'password', password)
-  Helper.populateField(component, 'passwordConfirmation', password)
-  const form = component.getByTestId('form')
+const validSubmitFactory = async (name = nameFaker.findName(), email = internet.email(), password = internet.password()): Promise<void> => {
+  Helper.populateField('name', name)
+  Helper.populateField('email', email)
+  Helper.populateField('password', password)
+  Helper.populateField('passwordConfirmation', password)
+  const form = screen.getByTestId('form')
   fireEvent.submit(form)
   await waitFor(() => form)
 }
 
 describe('Signup Component', () => {
-  afterEach(cleanup)
-
   test('should start with initial state', () => {
     const validationError = random.words()
-    const { component } = loginComponentFactory({ validationError })
-    Helper.testChildCount(component, 'error-wrapper', 0)
-    Helper.testElementDisabledState(component, 'submit', true)
-    Helper.testStatusForField(component, 'name', validationError)
-    Helper.testStatusForField(component, 'email', validationError)
-    Helper.testStatusForField(component, 'password', validationError)
-    Helper.testStatusForField(component, 'passwordConfirmation', validationError)
+    loginComponentFactory({ validationError })
+    Helper.testChildCount('error-wrapper', 0)
+    Helper.testElementDisabledState('submit', true)
+    Helper.testStatusForField('name', validationError)
+    Helper.testStatusForField('email', validationError)
+    Helper.testStatusForField('password', validationError)
+    Helper.testStatusForField('passwordConfirmation', validationError)
   })
 
   test('should show name error if validation fails', () => {
     const validationError = random.words()
-    const { component } = loginComponentFactory({ validationError })
-    Helper.populateField(component, 'name')
-    Helper.testStatusForField(component, 'name', validationError)
+    loginComponentFactory({ validationError })
+    Helper.populateField('name')
+    Helper.testStatusForField('name', validationError)
   })
 
   test('should show email error if validation fails', () => {
     const validationError = random.words()
-    const { component } = loginComponentFactory({ validationError })
-    Helper.populateField(component, 'email')
-    Helper.testStatusForField(component, 'email', validationError)
+    loginComponentFactory({ validationError })
+    Helper.populateField('email')
+    Helper.testStatusForField('email', validationError)
   })
 
   test('should show password error if validation fails', () => {
     const validationError = random.words()
-    const { component } = loginComponentFactory({ validationError })
-    Helper.populateField(component, 'password')
-    Helper.testStatusForField(component, 'password', validationError)
+    loginComponentFactory({ validationError })
+    Helper.populateField('password')
+    Helper.testStatusForField('password', validationError)
   })
 
   test('should show password confirmation error if validation fails', () => {
     const validationError = random.words()
-    const { component } = loginComponentFactory({ validationError })
-    Helper.populateField(component, 'passwordConfirmation')
-    Helper.testStatusForField(component, 'passwordConfirmation', validationError)
+    loginComponentFactory({ validationError })
+    Helper.populateField('passwordConfirmation')
+    Helper.testStatusForField('passwordConfirmation', validationError)
   })
 
   test('should show valid name state if validation succeeds', () => {
-    const { component } = loginComponentFactory()
-    Helper.populateField(component, 'name')
-    Helper.testStatusForField(component, 'name')
+    loginComponentFactory()
+    Helper.populateField('name')
+    Helper.testStatusForField('name')
   })
 
   test('should show valid email state if validation succeeds', () => {
-    const { component } = loginComponentFactory()
-    Helper.populateField(component, 'email', internet.email())
-    Helper.testStatusForField(component, 'email')
+    loginComponentFactory()
+    Helper.populateField('email', internet.email())
+    Helper.testStatusForField('email')
   })
 
   test('should show valid password state if validation succeeds', () => {
-    const { component } = loginComponentFactory()
-    Helper.populateField(component, 'password', internet.password())
-    Helper.testStatusForField(component, 'password')
+    loginComponentFactory()
+    Helper.populateField('password', internet.password())
+    Helper.testStatusForField('password')
   })
 
   test('should show valid password confirmation state if validation succeeds', () => {
-    const { component } = loginComponentFactory()
-    Helper.populateField(component, 'passwordConfirmation', internet.password())
-    Helper.testStatusForField(component, 'passwordConfirmation')
+    loginComponentFactory()
+    Helper.populateField('passwordConfirmation', internet.password())
+    Helper.testStatusForField('passwordConfirmation')
   })
 
   test('should enable submit button if form is valid', () => {
-    const { component } = loginComponentFactory()
+    loginComponentFactory()
     const password = internet.password()
-    Helper.populateField(component, 'name', nameFaker.findName())
-    Helper.populateField(component, 'email', internet.email())
-    Helper.populateField(component, 'password', password)
-    Helper.populateField(component, 'passwordConfirmation', password)
-    Helper.testElementDisabledState(component, 'submit', false)
+    Helper.populateField('name', nameFaker.findName())
+    Helper.populateField('email', internet.email())
+    Helper.populateField('password', password)
+    Helper.populateField('passwordConfirmation', password)
+    Helper.testElementDisabledState('submit', false)
   })
 
   test('should show spinner on submit', async () => {
-    const { component } = loginComponentFactory()
-    await validSubmitFactory(component)
-    Helper.testElementExists(component, 'spinner')
+    loginComponentFactory()
+    await validSubmitFactory()
+    Helper.testElementExists('spinner')
   })
 
   test('should call addAccount with correct values', async () => {
-    const { component, addAccountSpy } = loginComponentFactory()
+    const { addAccountSpy } = loginComponentFactory()
     const name = nameFaker.findName()
     const email = internet.email()
     const password = internet.password()
-    await validSubmitFactory(component, name, email, password)
+    await validSubmitFactory(name, email, password)
     expect(addAccountSpy.params).toEqual({ name, email, password, passwordConfirmation: password })
   })
 
   test('should call authentication only once', async () => {
-    const { component, addAccountSpy } = loginComponentFactory()
-    await validSubmitFactory(component)
-    await validSubmitFactory(component)
+    const { addAccountSpy } = loginComponentFactory()
+    await validSubmitFactory()
+    await validSubmitFactory()
     expect(addAccountSpy.callsCount).toBe(1)
   })
 
   test('should not call authentication if form is invalid', async () => {
     const validationError = random.words()
-    const { component, addAccountSpy } = loginComponentFactory({ validationError })
-    await validSubmitFactory(component)
+    const { addAccountSpy } = loginComponentFactory({ validationError })
+    await validSubmitFactory()
     expect(addAccountSpy.callsCount).toBe(0)
   })
 
   test('should present error if add account fails', async () => {
-    const { component, addAccountSpy } = loginComponentFactory()
+    const { addAccountSpy } = loginComponentFactory()
     const error = new EmailInUseError()
     jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
-    await validSubmitFactory(component)
-    Helper.testElementText(component, 'main-error', error.message)
-    Helper.testChildCount(component, 'error-wrapper', 1)
+    await validSubmitFactory()
+    Helper.testElementText('main-error', error.message)
+    Helper.testChildCount('error-wrapper', 1)
   })
 
   test('should call SaveAccessToken on success', async () => {
-    const { component, addAccountSpy, setCurrentAccountMock } = loginComponentFactory()
-    await validSubmitFactory(component)
+    const { addAccountSpy, setCurrentAccountMock } = loginComponentFactory()
+    await validSubmitFactory()
     expect(setCurrentAccountMock).toHaveBeenCalledWith(addAccountSpy.account)
     expect(history.length).toBe(1)
     expect(history.location.pathname).toBe('/')
   })
 
   test('should go to login page', () => {
-    const { component } = loginComponentFactory()
-    const login = component.getByTestId('login')
+    loginComponentFactory()
+    const login = screen.getByTestId('login')
     fireEvent.click(login)
     expect(history.length).toBe(1)
     expect(history.location.pathname).toBe('/login')
