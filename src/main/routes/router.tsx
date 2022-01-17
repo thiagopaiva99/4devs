@@ -1,5 +1,4 @@
-import { UnexpectedError } from '@/domain/errors'
-import { AccountModel } from '@/domain/models'
+import PrivateRoute from '@/presentation/components/private-route/private-route'
 import { ApiContext } from '@/presentation/contexts'
 import { SurveyList } from '@/presentation/pages'
 import React from 'react'
@@ -16,7 +15,7 @@ const Router: React.FC = () => (
             <Switch>
                 <Route path="/login" exact component={loginFactory} />
                 <Route path="/signup" exact component={signupFactory} />
-                <Route path="/" exact component={SurveyList} />
+                <PrivateRoute path="/" exact component={SurveyList} />
             </Switch>
         </BrowserRouter>
     </ApiContext.Provider>

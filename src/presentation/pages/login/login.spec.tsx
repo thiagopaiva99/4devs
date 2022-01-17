@@ -10,6 +10,7 @@ import { Login } from './login'
 import { AuthenticationSpy, Helper, ValidationStub } from '@/presentation/test'
 import { InvalidCredentialsError } from '@/domain/errors'
 import { AccountModel } from '@/domain/models'
+import { mockAccountModel } from '@/domain/test'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
@@ -34,7 +35,7 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   const setCurrentAccountMock = jest.fn()
 
   const component = render(
-    <ApiContext.Provider value={{ setCurrentAccount: setCurrentAccountMock }}>
+    <ApiContext.Provider value={{ setCurrentAccount: setCurrentAccountMock, getCurrentAccount: () => mockAccountModel() }}>
       <Router history={history}>
           <Login
             validation={validationStub}

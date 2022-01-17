@@ -1,5 +1,5 @@
 import React from 'react'
-import { localUpdateCurrentAccountFactory, remoteAddAccountFactory } from '@/main/factories/usecases'
+import { remoteAddAccountFactory } from '@/main/factories/usecases'
 import { signupValidationsFactory } from './signup-validation.factory'
 import { Signup } from '@/presentation/pages'
 
@@ -8,7 +8,6 @@ export const signupFactory: React.FC = () => {
         <Signup
           addAccount={remoteAddAccountFactory()}
           validation={signupValidationsFactory()}
-          updateCurrentAccount={localUpdateCurrentAccountFactory()}
         />
   )
 }

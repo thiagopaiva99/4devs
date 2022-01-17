@@ -3,11 +3,12 @@ import { render, RenderResult, fireEvent, waitFor, cleanup } from '@testing-libr
 import { Signup } from './signup'
 import { internet, random, name as nameFaker } from 'faker'
 import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
-import { EmailInUseError, InvalidCredentialsError } from '@/domain/errors'
+import { EmailInUseError } from '@/domain/errors'
 import { createMemoryHistory } from 'history'
 import { Router } from 'react-router'
 import { ApiContext } from '@/presentation/contexts'
 import { AccountModel } from '@/domain/models'
+import { mockAccountModel } from '@/domain/test'
 
 type LoginComponentFactoryTypes = {
   component: RenderResult
@@ -29,7 +30,7 @@ const loginComponentFactory = (params?: FactoryParams): LoginComponentFactoryTyp
   const addAccountSpy = new AddAccountSpy()
   const setCurrentAccountMock = jest.fn()
   const component = render(
-    <ApiContext.Provider value={{ setCurrentAccount: setCurrentAccountMock }}>
+    <ApiContext.Provider value={{ setCurrentAccount: setCurrentAccountMock, getCurrentAccount: () => mockAccountModel() }}>
       <Router history={history}>
         <Signup
           validation={validationStub}
