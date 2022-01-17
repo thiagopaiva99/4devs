@@ -3,7 +3,7 @@ import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 
 import { internet, random } from 'faker'
-import { cleanup, fireEvent, render, RenderResult, waitFor, screen } from '@testing-library/react'
+import { fireEvent, render, RenderResult, waitFor, screen } from '@testing-library/react'
 
 import { ApiContext } from '@/presentation/contexts'
 import { Login } from './login'
@@ -64,8 +64,8 @@ describe('Login Component', () => {
   test('should start with initial state', () => {
     const validationError = random.words()
     loginComponentFactory({ validationError })
-    Helper.testChildCount('error-wrapper', 0)
-    Helper.testElementDisabledState('submit', true)
+    expect(screen.getByTestId('error-wrapper').children).toHaveLength(0)
+    expect(screen.getByTestId('submit')).toBeDisabled()
     Helper.testStatusForField('email', validationError)
     Helper.testStatusForField('password', validationError)
   })
@@ -100,13 +100,13 @@ describe('Login Component', () => {
     loginComponentFactory()
     Helper.populateField('email', internet.email())
     Helper.populateField('password', internet.password())
-    Helper.testElementDisabledState('submit', false)
+    expect(screen.getByTestId('submit')).toBeEnabled()
   })
 
   test('should show spinner on submit', async () => {
     loginComponentFactory()
     await validSubmitFactory()
-    Helper.testElementExists('spinner')
+    expect(screen.queryByTestId('spinner')).toBeInTheDocument()
   })
 
   test('should call authentication with correct values', async () => {
@@ -136,8 +136,8 @@ describe('Login Component', () => {
     const error = new InvalidCredentialsError()
     jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
     await validSubmitFactory()
-    Helper.testElementText('main-error', error.message)
-    Helper.testChildCount('error-wrapper', 1)
+    expect(screen.getByTestId('main-error')).toHaveTextContent(error.message)
+    expect(screen.getByTestId('error-wrapper').children).toHaveLength(1)
   })
 
   test('should call SaveAccessToken on success', async () => {

@@ -61,8 +61,8 @@ describe('Signup Component', () => {
   test('should start with initial state', () => {
     const validationError = random.words()
     loginComponentFactory({ validationError })
-    Helper.testChildCount('error-wrapper', 0)
-    Helper.testElementDisabledState('submit', true)
+    expect(screen.getByTestId('error-wrapper').children).toHaveLength(0)
+    expect(screen.getByTestId('submit')).toBeDisabled()
     Helper.testStatusForField('name', validationError)
     Helper.testStatusForField('email', validationError)
     Helper.testStatusForField('password', validationError)
@@ -128,13 +128,13 @@ describe('Signup Component', () => {
     Helper.populateField('email', internet.email())
     Helper.populateField('password', password)
     Helper.populateField('passwordConfirmation', password)
-    Helper.testElementDisabledState('submit', false)
+    expect(screen.getByTestId('submit')).toBeEnabled()
   })
 
   test('should show spinner on submit', async () => {
     loginComponentFactory()
     await validSubmitFactory()
-    Helper.testElementExists('spinner')
+    expect(screen.queryByTestId('spinner')).toBeInTheDocument()
   })
 
   test('should call addAccount with correct values', async () => {
@@ -165,8 +165,8 @@ describe('Signup Component', () => {
     const error = new EmailInUseError()
     jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
     await validSubmitFactory()
-    Helper.testElementText('main-error', error.message)
-    Helper.testChildCount('error-wrapper', 1)
+    expect(screen.getByTestId('main-error')).toHaveTextContent(error.message)
+    expect(screen.getByTestId('error-wrapper').children).toHaveLength(1)
   })
 
   test('should call SaveAccessToken on success', async () => {
