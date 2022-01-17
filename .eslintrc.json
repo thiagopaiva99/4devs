@@ -17,6 +17,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "react/jsx-uses-react": "error",
