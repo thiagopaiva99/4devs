@@ -6,9 +6,10 @@ import { IconName } from '@/presentation/components'
 
 describe('SurveyItem Component', () => {
   it('should render with correct values', () => {
-    const survey = mockSurveyModel()
-    survey.didAnswer = true
-    survey.date = new Date('2022-01-18T00:00:00')
+    const survey = Object.assign(mockSurveyModel(), {
+      didAnswer: true,
+      date: new Date('2022-01-18T00:00:00')
+    })
     render(<SurveyItem survey={survey} />)
     expect(screen.getByTestId('icon')).toHaveProperty('src', IconName.thumbUp)
     expect(screen.getByTestId('question')).toHaveTextContent(survey.question)
